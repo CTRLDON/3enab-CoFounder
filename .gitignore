@@ -1,0 +1,33 @@
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Node / frontend build output
+node_modules/
+frontend/dist/
+frontend/coverage/
+*.tsbuildinfo
+
+# Runtime data (database, generated MVP files, runtime decision logs)
+data/
+backend/data/
+*.sqlite
+*.sqlite3
+*.db
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Backups made by update scripts
+.mate-backup-*/

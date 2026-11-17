@@ -1,0 +1,136 @@
+@import "tailwindcss";
+@import "@fontsource-variable/instrument-sans";
+@import "@xyflow/react/dist/base.css";
+
+/* Palette tokens. Defaults = the "no direction yet" archetype; the backend's theme engine replaces them
+   per venture (see useVentureTheme). Economic and evidence colours never change meaning. */
+:root {
+  --c-bg: #f5faf9;
+  --c-surface: #fcfffe;
+  --c-surface-sunken: #ebf3f2;
+  --c-border: #d9e2e0;
+  --c-control-border: #899593;
+  --c-text: #172523;
+  --c-text-muted: #5f706d;
+  --c-accent: #358077;
+  --c-accent-hover: #206e66;
+  --c-accent-contrast: #ffffff;
+  --c-accent-soft: #def3ef;
+  --c-accent-text: #2b776f;
+  --c-focus: #358077;
+  --c-danger: #af3c3a;
+  --c-econ-revenue: #1c7b5a;
+  --c-econ-revenue-soft: #e5f9ef;
+  --c-econ-revenue-text: #0e6549;
+  --c-econ-expense: #c8800d;
+  --c-econ-expense-soft: #fff1e2;
+  --c-econ-expense-text: #764a05;
+  --c-econ-mixed: #7b52a4;
+  --c-econ-mixed-soft: #f6f1fd;
+  --c-econ-mixed-text: #663e8e;
+  --c-econ-strategic: #506580;
+  --c-econ-strategic-soft: #eef4fc;
+  --c-econ-strategic-text: #425771;
+  --c-econ-unknown: #808080;
+  --c-econ-unknown-soft: #f3f3f3;
+  --c-econ-unknown-text: #555555;
+  --c-ev-verified-bg: #e0f7e7;
+  --c-ev-verified-fg: #1e7546;
+  --c-ev-estimate-bg: #e7f2fc;
+  --c-ev-estimate-fg: #1f689d;
+  --c-ev-assumption-bg: #feedda;
+  --c-ev-assumption-fg: #986106;
+  --c-ev-projection-bg: #f2edfd;
+  --c-ev-projection-fg: #6e519d;
+  --c-ev-mocked-bg: #feebe9;
+  --c-ev-mocked-fg: #b63132;
+  --c-ev-unknown-bg: #f0f0f0;
+  --c-ev-unknown-fg: #636363;
+}
+
+@theme inline {
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-sunken: var(--c-surface-sunken);
+  --color-line: var(--c-border);
+  --color-control: var(--c-control-border);
+  --color-ink: var(--c-text);
+  --color-muted: var(--c-text-muted);
+  --color-accent: var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-text: var(--c-accent-text);
+  --color-on-accent: var(--c-accent-contrast);
+  --color-danger: var(--c-danger);
+}
+
+@layer base {
+  html {
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-bg text-ink font-sans;
+    line-height: 1.55;
+    font-variant-numeric: tabular-nums;
+    transition: background-color 400ms ease, color 400ms ease;
+  }
+  :focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+}
+
+/* Type scale (Bringhurst-style modular steps on a 15px base) */
+.t-display { font-size: 2.13rem; line-height: 1.12; font-weight: 600; letter-spacing: -0.02em; }
+.t-title { font-size: 1.6rem; line-height: 1.2; font-weight: 600; letter-spacing: -0.012em; }
+.t-section { font-size: 1.13rem; line-height: 1.35; font-weight: 600; }
+.t-small { font-size: 0.867rem; line-height: 1.45; }
+.t-micro { font-size: 0.8rem; line-height: 1.35; }
+
+.measure { max-width: 68ch; }
+
+/* Economic patterns: colour plus a distinct stripe pattern, so meaning never relies on colour alone. */
+.econ-stripe { width: 5px; align-self: stretch; border-radius: 3px 0 0 3px; flex: none; }
+.econ-revenue { background: var(--c-econ-revenue); }
+.econ-expense { background: repeating-linear-gradient(135deg, var(--c-econ-expense) 0 3px, transparent 3px 6px), var(--c-econ-expense-soft); }
+.econ-mixed { background: linear-gradient(to bottom, var(--c-econ-revenue) 0 50%, var(--c-econ-expense) 50% 100%); }
+.econ-strategic { background: radial-gradient(circle, var(--c-econ-strategic) 1.4px, transparent 1.6px) 0 0 / 5px 5px, var(--c-econ-strategic-soft); }
+.econ-unknown { background: repeating-linear-gradient(to bottom, var(--c-econ-unknown) 0 4px, transparent 4px 8px); }
+
+/* React Flow tuning */
+.react-flow__node { transition: transform 260ms cubic-bezier(.2,.7,.2,1); }
+.react-flow__edge-path { stroke: var(--c-border); stroke-width: 1.5; transition: stroke 160ms ease; }
+.react-flow__edge.is-related .react-flow__edge-path { stroke: var(--c-accent); stroke-width: 2; }
+.react-flow__handle { opacity: 0; pointer-events: none; }
+.react-flow__controls { box-shadow: none; }
+
+.panel-enter { animation: panel-in 220ms cubic-bezier(.2,.7,.2,1); }
+@keyframes panel-in { from { opacity: 0; transform: translateX(var(--panel-from, 12px)); } to { opacity: 1; transform: none; } }
+.fade-in { animation: fade-in 260ms ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+/* Markdown artifacts */
+.prose-mate { max-width: 74ch; }
+.prose-mate h1 { font-size: 1.45rem; font-weight: 600; margin: 0 0 .8rem; line-height: 1.25; }
+.prose-mate h2 { font-size: 1.1rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+.prose-mate h3 { font-weight: 600; margin: 1.2rem 0 .4rem; }
+.prose-mate p, .prose-mate ul, .prose-mate ol, .prose-mate table, .prose-mate blockquote, .prose-mate pre { margin: 0 0 .9rem; }
+.prose-mate ul { list-style: disc; padding-left: 1.2rem; }
+.prose-mate ol { list-style: decimal; padding-left: 1.4rem; }
+.prose-mate li { margin: .2rem 0; }
+.prose-mate table { width: 100%; border-collapse: collapse; font-size: .87rem; display: block; overflow-x: auto; }
+.prose-mate th, .prose-mate td { border-bottom: 1px solid var(--c-border); padding: .45rem .55rem; text-align: left; vertical-align: top; }
+.prose-mate th { color: var(--c-text-muted); font-weight: 600; }
+.prose-mate blockquote { border-left: 3px solid var(--c-econ-expense); padding: .4rem .8rem; background: var(--c-econ-expense-soft); color: var(--c-econ-expense-text); }
+.prose-mate code { font-size: .85em; background: var(--c-surface-sunken); padding: .1em .3em; border-radius: 4px; }
+.prose-mate pre { background: var(--c-surface-sunken); padding: .8rem; border-radius: 8px; overflow-x: auto; font-size: .8rem; }
+.prose-mate a { color: var(--c-accent-text); text-decoration: underline; text-underline-offset: 2px; }

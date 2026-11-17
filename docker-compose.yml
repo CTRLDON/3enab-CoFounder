@@ -1,0 +1,73 @@
+# One-command setup:  docker compose up
+# Then open http://localhost:8080
+#
+# Live agents use the Gemini API free tier by default: put GEMINI_API_KEY in .env (see .env.example).
+# Without a key, live ventures say so; the clearly labelled scripted demo mode works immediately.
+#
+# Local open-weight model instead (no key, nothing leaves your machine):
+#   MODEL_PROVIDER=ollama docker compose --profile ollama up
+# The "ollama" profile starts Ollama and pulls OLLAMA_MODEL (default qwen3.5:9b). GPU: docs/running-with-gpu.md.
+services:
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  ollama-pull:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: ollama:11434
+      MODEL: ${OLLAMA_MODEL:-qwen3.5:9b}
+    entrypoint: ["/bin/sh", "-c", "ollama pull \"$${MODEL}\" && echo Model ready."]
+    restart: "no"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    # Values come from .env if present (Compose reads it automatically), otherwise these defaults.
+    environment:
+      MODEL_PROVIDER: ${MODEL_PROVIDER:-gemini}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      GEMINI_THINKING_BUDGET: ${GEMINI_THINKING_BUDGET:-0}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3.5:9b}
+      OLLAMA_TIMEOUT_SECONDS: ${OLLAMA_TIMEOUT_SECONDS:-240}
+      OLLAMA_MAX_RETRIES: ${OLLAMA_MAX_RETRIES:-2}
+      OLLAMA_THINK: ${OLLAMA_THINK:-false}
+      OLLAMA_TEMPERATURE: ${OLLAMA_TEMPERATURE:-0.4}
+      MATE_DEFAULT_MODE: ${MATE_DEFAULT_MODE:-live}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      RESEARCH_ONLINE: ${RESEARCH_ONLINE:-true}
+      RESEARCH_TIMEOUT_SECONDS: ${RESEARCH_TIMEOUT_SECONDS:-8}
+    volumes:
+      - mate_data:/app/data
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  mate_data:
